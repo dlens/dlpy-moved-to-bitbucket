@@ -1,0 +1,103 @@
+\ProvidesPackage{dlmath}
+\DeclareOption{publish}{
+}
+
+\DeclareOption{fullpage}{
+  \AtEndOfPackage{\RequirePackage{fullpage}}
+}
+
+\DeclareOption{design}{
+	\AtEndOfPackage{
+		\RequirePackage{xltxtra}
+        \setmainfont[    Extension = .otf,
+           UprightFont = *-Reg,
+              BoldFont = *-Bold,
+            ItalicFont = *-Reg-It,
+        BoldItalicFont = *-Bold-It,
+        ]{Proxima_Nova}
+
+		\pagestyle{fancyplain}
+		\fancyhead{}
+		\fancyhead[R]{\includegraphics[height=0.25in]{logo}}
+		\renewcommand{\headrulewidth}{0pt}
+		\fancyheadoffset[R]{0.0in}
+		\RequirePackage{setspace}
+		\onehalfspacing
+%		\let\oldmaketitle\maketitle
+%		\renewcommand{\maketitle}{\oldmaketitle \thispagestyle{fancy}}
+		\RequirePackage[headsep=0.65in, top=1.0in, bottom=1.0in, left=1.25in, right=1.25in]{geometry}
+	}
+}
+
+\DeclareOption{journal69}{
+ \AtEndOfPackage{\RequirePackage[margin=.55in, paperwidth=6in, paperheight=9in]{geometry}}
+}
+\ProcessOptions\relax
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{mathrsfs}
+\usepackage{amsthm}
+\usepackage{amssymb}
+
+
+\usepackage{float}
+\usepackage{soul}
+
+\usepackage{titling}
+\usepackage{dsfont}
+%\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{boxedminipage}
+\usepackage{color}
+\usepackage[bottom]{footmisc}
+\usepackage{booktabs, multicol, multirow}
+\usepackage{todonotes}
+\usepackage{fancyhdr}
+%\usepackage{nameref}
+\usepackage{framed}
+\usepackage{soul}
+\pagestyle{fancy}
+\fancyhead{}
+\fancyhead[CO]{\thedate}
+\fancyhead[CE]{\thetitle}
+\fancyhead[LE,RO]{\thepage}
+
+\newcommand{\R}{\textsc{R}}
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+\newtheorem{context}{Context}
+\newtheorem{solution}{Solution}
+{\theoremstyle{definition} \newtheorem{definition}{Definition}}
+{\theoremstyle{remark} \newtheorem*{example*}{Example}}
+{\theoremstyle{remark} \newtheorem*{remarkstar}{Example}}
+\newtheorem*{goal*}{Goal}
+\newtheorem{note}{Note}
+
+\providecommand{\fixme}[1]{\todo[inline]{#1}}
+\providecommand*{\currentname}{\@currentlabelname}
+\providecommand{\keywords}[1]{\textbf{\emph{Keywords:}}}
+
+\newcommand{\qcode}[1]{`\texttt{#1}'}
+\providecommand{\code}[1]{\texttt{#1}}
+\providecommand{\url}[1]{\textcolor{blue}{\underline{#1}}}
+\ifdefined \definitionstar \else {\theoremstyle{definition}\newtheorem*{definitionstar}{Definition}}
+\ifdefined \notestar \else {\theoremstyle{definition}\newtheorem*{notestar}{Note}}
+{\theoremstyle{definition} \newtheorem{example}{Example}}
+{\theoremstyle{definition} \newtheorem{idea}{Idea}}
+{\theoremstyle{definition} \newtheorem{remark}{Remark}}
+{\theoremstyle{definition} \newtheorem{question}{Question}}
+{\theoremstyle{definition} \newtheorem{problem}{Problem}}
+
+\newcommand{\defeq}{\ensuremath{\stackrel{\triangle}{=}}}
+\newcommand{\powerset}{\ensuremath{\mathscr{P}}}
+\newcommand{\unitvec}{\ensuremath{\vec{\mathds{1}}}}
+\newenvironment{bitemize}
+	{
+		\begin{framed}
+		\begin{itemize}
+	}
+	{
+		\end{itemize}
+		\end{framed}
+	}
