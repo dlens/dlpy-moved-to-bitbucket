@@ -29,27 +29,27 @@ class Decayer(Enum):
     EXP=1,
     LINEAR=2
 
-def decay_exponential(x, x0, y0, m, B):
+def decay_exponential(x, x0, y0, m, C):
     '''
     Creates a
     :param x:
     :param x0:
     :param y0:
     :param m:
-    :param B:
+    :param C:
     :return:
     '''
     if m==0:
         raise Exception("Cannot have zero slope for decay")
-    elif y0 == B:
+    elif y0 == C:
         # There is no decay to do, just send back B
-        return B
+        return C
     else:
-        c = m/(y0-B)
-        A = (y0-B)/np.exp(c*x0)
-        return A*np.exp(c*x)+B
+        B = m/(y0 - C)
+        A = (y0 - C) / np.exp(B * x0)
+        return A * np.exp(B*x) + C
 
-def decay_linear(x, x0, y0, m, B, k=1):
+def decay_linear(x, x0, y0, m, C, k=1):
     '''
     Creates a funciton of the form f(x)=A/(x-c)^k+B where
     f(x0)=y0
@@ -60,16 +60,16 @@ def decay_linear(x, x0, y0, m, B, k=1):
     :param x0: the x coord of the point whose value we know
     :param y0: the y coord of the point whose value we know
     :param m: the slope at the point x0
-    :param B: the asymptotic value
+    :param C: the asymptotic value
     :param k: the power to raise the denominator to
     :return:
     '''
     if m == 0:
-        c = x0-1
+        B = x0-1
     else:
-        c = x0 + (y0-B)*k/m
-    A = (y0-B)*(x0-c)**k
-    return A/(x-c) + B
+        B = x0 + (y0 - C) * k / m
+    A = (y0 - C) * (x0 - B) ** k
+    return A / (x-B) + C
 
 
 def slope(pt1, pt2):
