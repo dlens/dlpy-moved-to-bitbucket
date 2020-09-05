@@ -207,9 +207,12 @@ define the formulas for our decay functions.
 We define the exponential decay function as:
 $$\mathfrak{e}_B(x) \defeq Ae^{Bx}+C$$
 and we define the power decay function of degree $n$ as:
-$$\mathfrak{p}_{k,B}(x) \defeq \frac{A}{(x-B)^k}+c$$
+$$\mathfrak{p}_{k,B}(x) \defeq \frac{A}{(x-B)^k}+C$$
 \end{definition}
-
+\begin{note}
+The parameter $C$ in both decay functions represents the limiting value
+the function is decaying towards.
+\end{note}
 \begin{definition}
 \label{def:pwdecay}
 Given $f(x)$ a piecewise linear function (continuous on a finite connected domain $[a,b]$) and
@@ -251,21 +254,21 @@ Theorem \ref{thm:main} is true when the decay function is a power function, i.e.
 $\mathfrak{p}_{k,B}(x)$.  Furthermore the parameters for the decay function on the left hand
 side decay function is given by:
 \begin{eqnarray*}
-C&=&y_1 + \frac{k}{m_1}(a_1-B)\\
+B&=&a_1 + \frac{k}{m_1}(y_1-B)\\
 A&=&(y_1-C)(a_1-B)^k
 \end{eqnarray*}
 and the parameters for the right hand side decay function are given by:
 \begin{eqnarray*}
-C&=&y_n + \frac{k}{m_{n-1}}(a_n-B)\\
+B&=&a_n + \frac{k}{m_{n-1}}(y_n-B)\\
 A&=&(y_n-C)(a_n-B)^k
 \end{eqnarray*}
 Where $\vec{a}=(a_1, \ldots, a_n)$, $\vec{y}=(y_1,\ldots,y_n)$ and $m_i$ are
 as Definition \ref{def:computational}.
 \end{theorem}
 \begin{proof}
-We need only derive the formula for $C$ and $A$ given that we know the value
+We need only derive the formula for $B$ and $A$ given that we know the value
 of the decay function at point $x_0$ and the value of its derivative
-at $x_0$.  So given our decay function:
+at $x_0$ and the limiting value, which is $C$.  So given our decay function:
 \begin{eqnarray}
 \label{eqn:1}
 \mathfrak{p}_{k,B}(x)&=&\frac{A}{(x-B)^k} + C
@@ -273,9 +276,10 @@ at $x_0$.  So given our decay function:
 and assume we know:
 \begin{eqnarray}
 \label{eqn:2}\mathfrak{p}_{k,B}(x_0)&=&y_0 \\
-\label{eqn:3}\mathfrak{p}'_{k,B}(x_0)&=&m_0
+\label{eqn:3}\mathfrak{p}'_{k,B}(x_0)&=&m_0 \\
+C&=&\hbox{ the limiting value}
 \end{eqnarray}
-we want to use those two equations to solve for $A, C$. Notice that:
+we want to use those equations to solve for $A, B$. Notice that:
 \begin{eqnarray}
 \label{eqn:4}\mathfrak{p}'_{k,B}(x) &=& \frac{-kA}{(x-B)^{k+1}}
 \end{eqnarray}
@@ -294,18 +298,18 @@ Using Equation \ref{eqn:3} and the definition of the slope in Equation
 \hbox{plug Equation \ref{eqn:k} in} \\
 \left(y_0-C\right)\left( \frac{-k}{x_0-B} \right) &=& m_0 \\
 y_0-C &=& -(x_0-B)\frac{m_0}{k} \\
--y_0+C &=&(x_0-B)\frac{m_0}{k} \\
-\label{eqn:Csolve} C &=& y_0+(x_0-B)\frac{m_0}{k}
+(y_0-C)\frac{k}{m_0}&=&-x_0+B \\
+\label{eqn:Bsolve}(y_0-C)\frac{k}{m_0}+x_0&=&B
 \end{eqnarray}
-With this we have solved for $C$, now we need to solve for $A$.  We can use
+With this we have solved for $B$, now we need to solve for $A$.  We can use
 Equation \ref{eqn:k} to do this.
 \begin{eqnarray}
 \frac{A}{(x_0-B)^k} &=& y_0 - C \\
 \label{eqn:Asolve} A &=& (x_0-B)^k(y_0-C)
 \end{eqnarray}
-Using Equations \ref{eqn:Csolve} and \ref{eqn:Asolve} for $a_1, y_1, m_1$ we
-get the left side decay formula for $A$ and $C$.  Similarly using those equations for
-$a_n, y_n, m_{n-1}$ we get the right side decay formula for $A$ and and $C$.
+Using Equations \ref{eqn:Bsolve} and \ref{eqn:Asolve} for $x_0=a_1, y_0=y_1, m_0=m_1$ we
+get the left side decay formula for $A$ and $B$.  Similarly using those equations for
+$a_n, y_n, m_{n-1}$ we get the right side decay formula for $A$ and and $B$.
 \end{proof}
 
 \begin{theorem}[Exponential Decay Version of Theorem \ref{thm:main}]
@@ -314,13 +318,13 @@ Theorem \ref{thm:main} is true when the decay function is an exponential functio
 $\mathfrak{e}_{B}(x)$.  Furthermore the parameters for the decay function on the left hand
 side decay function is given by:
 \begin{eqnarray*}
-C&=&y_1 - \frac{m_1}{B}\\
-A&=&\frac{m_1}{B} e^{-Ba_1}
+A&=&(y_1-C)e^{-Ba_1}\\
+B &=& \frac{m_1}{y_1-C}
 \end{eqnarray*}
 and the parameters for the right hand side decay function are given by:
 \begin{eqnarray*}
-C&=&y_n - \frac{m_{n-1}}{B}\\
-A&=&\frac{m_{n-1}}{B} e^{-Ba_n}
+A&=&(y_n-C)e^{-Ba_n}\\
+B &=& \frac{m_{n-1}}{y_n-C}
 \end{eqnarray*}
 Where $\vec{a}=(a_1, \ldots, a_n)$, $\vec{y}=(y_1,\ldots,y_n)$ and $m_i$ are
 as Definition \ref{def:computational}.
@@ -337,29 +341,31 @@ Notice that the exponential decay function and its derivative are given by:
 \mathfrak{e}_{B}(x) = Ae^{Bx}+C \label{eqn:e3}\\
 \mathfrak{e}'_{B}(x) = ABe^{Bx} \label{eqn:e4}
 \end{eqnarray}
+We can use the formula in Equation \ref{eqn:e3} and plug into Equation \ref{eqn:e1}
+and get:
+\begin{eqnarray}
+\mathfrak{e}_{B}(x_0) &=& y_0 \\
+Ae^{Bx_0} + C &=& y_0 \\
+Ae^{Bx_0} &=& y_0 - C \label{eqn:ePlugin}\\
+A&=&(y_0-C)e^{-Bx_0} \label{eqn:eAsolve}
+\end{eqnarray}
+
 Using the formula from Equation \ref{eqn:e4} with Equation \ref{eqn:e2} and
 solving for $A$ we get:
 \begin{eqnarray}
 \mathfrak{e}'_{B}(x_0) &=& m_0 \\
 ABe^{Bx_0} &=& m_0 \\
-Ae^{Bx_0} &=& \frac{m_0}{B} \label{eqn:eplugin}\\
-A &=& \frac{m_0}{B} e^{-Bx_0} \label{eqn:eAsolve}
-\end{eqnarray}
-We can also use the formula in Equation \ref{eqn:e3} and plug into Equation \ref{eqn:e1}
-and get:
-\begin{eqnarray}
-\mathfrak{e}_{B}(x_0) &=& y_0 \\
-Ae^{Bx_0} + C &=& y_0 \\
-\frac{m_0}{B} + C &=& y_0 \hbox{ (plugin Equation \ref{eqn:eplugin})} \\
-C &=& y_0 - \frac{m_0}{B} \label{eqn:eCsolve}
+B \left(Ae^{Bx_0} \right)&=& m_0 \\
+B(y_0-C) &=&m_0 \hbox{ (plugin Equation \ref{eqn:ePlugin})} \\
+B &=& \frac{m_0}{y_0-C} \label{eqn:eBsolve}
 \end{eqnarray}
 
-We can use Equations \ref{eqn:eAsolve} and \ref{eqn:eCsolve} when $x_0=a_1$,
+We can use Equations \ref{eqn:eAsolve} and \ref{eqn:eBsolve} when $x_0=a_1$,
 $y_0=y_1$ and $m_0=m_1$ to get the formulas for the left hand side decay formulas
 for $A$ and $C$:
 \begin{eqnarray*}
-A &=& \frac{m_1}{B} e^{-Ba_1}\\
-C &=& y_1 - \frac{m_1}{B}
+A&=&(y_1-C)e^{-Ba_1}\\
+B &=& \frac{m_1}{y_1-C}
 \end{eqnarray*}
 And similarly we get the equations for the right hand side decay formula.
 \end{proof}
