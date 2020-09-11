@@ -19,11 +19,14 @@
 \begin{document}
 \maketitle
 
-\tableofcontents
-%\begin{abstract}
-%\end{abstract}
-
 %\tableofcontents
+\begin{abstract}
+	Piecewise defined linear functions can be very useful in certain situations.  Having those
+	functions decay smoothly to asymptotic values can be even more useful.  In this paper we
+	describe a way to achieve that.
+\end{abstract}
+
+\tableofcontents
 
 \section{Introduction}
 A piecewise defined function is a function whose formula varies on different
@@ -38,7 +41,7 @@ The best way to get a feel for piecewise defined functions is to see an
 example and the corresponding graph of the function.
 Consider the following piecewise defined function examples:
 \begin{note}
-In the graphs below We use the red dots to indicate the beginning
+In the graphs below we use the red dots to indicate the beginning
 and end points of the domains of definition of the function.
 \end{note}
 \begin{example}
@@ -90,17 +93,20 @@ $$
 \includegraphics[width=2.5in]{graph3}
 \end{center}
 This is an example of a discontinuous piecewise defined function because the
-graph has a break from $x=2$ to $x=5$.  Also his function has a domain of
+graph has a break from $x=2$ to $x=5$.  Also this function has a domain of
 $x \in [0, 2] \cup [5,8]$ which is a disconnected domain, i.e.
 there is a gap in the domain from $2$ to $5$.
 \end{example}
 
+\begin{note}[Warning!]
 For the purposes of this paper we only consider piecewise defined functions
 that are continuous and have a connected domain.  In other words we only
 consider the case of Example \ref{ex:1}.  We do not consider discontinuous
 piecewise defined functions like Example \ref{ex:2}.  Neither do we consider
 piecewise defined functions whose domain is disconnects, as in Example
 \ref{ex:3}.
+\end{note}
+
 \section{Piecewise linear functions}
 A piecewise linear function is simply a piecewise defined function whose
 every piece is a linear function.  There are several ways we could formally
@@ -148,11 +154,11 @@ noting that the function is linear from the point $(a_i, y_i)$ to the point
 $(a_{i+1}, y_{i+1})$.  Then the slope $m_i$ is:
 $$m_i = \frac{y_{i+1}-y_i}{a_{i+1}-a_i}$$
 and $b_i$ can be found by plugging either point into the equation of the line
-$y=mx+b$ and solving for $b$.  If we use $(a_i, y_i)$ we get:
-$$b_i=y_i-ma_i$$
+$y=m_ix+b$ and solving for $b$.  If we use $(a_i, y_i)$ we get:
+$$b_i=y_i-m_ia_i$$
 \end{note}
 Based Note \ref{note:mb} we see that a piecewise linear function can be defined
-by giving a list of $a_i$'s and $y_i$'s.  Therefore we have a simply computational
+by giving a list of $a_i$'s and $y_i$'s.  Therefore we have a simple computational
 definition of a piecewise linear function.
 \begin{definition}[Computational]
 \label{def:computational}
@@ -171,7 +177,7 @@ $$
 where:
 \begin{eqnarray*}
 m_i &=& \frac{y_{i+1}-y_i}{a_{i+1}-a_i} \\
-b_i &=& y_i - m x_i
+b_i &=& y_i - m_i x_i
 \end{eqnarray*}
 \end{definition}
 \section{Piecewise linear with decay}
@@ -190,7 +196,7 @@ There are many ways we can, consider:
 
 This graph extends the previous one with the desired asymptotic behavior.
 However there are many other choices as well.  Looking at the graph above
-notice that the slope of the graph where the left hand decay begins does
+we notice that the slope of the graph where the left hand decay begins does
 not match the slope of the piecewise linear piece beside it.  If we want
 the slope of the decay function to match the slope of the linear piece the
 decay connects with, this limits our choices more.  In fact if we:
@@ -205,9 +211,9 @@ collect that idea in Definition \ref{def:pwdecay}.  However first we need to
 define the formulas for our decay functions.
 \begin{definition}[Decay functions]
 We define the exponential decay function as:
-$$\mathfrak{e}_B(x) \defeq Ae^{Bx}+C$$
-and we define the power decay function of degree $n$ as:
-$$\mathfrak{p}_{k,B}(x) \defeq \frac{A}{(x-B)^k}+C$$
+$$\mathfrak{e}_{A,B,C}(x) \defeq Ae^{Bx}+C$$
+and we define the power decay function of degree $k$ as:
+$$\mathfrak{p}_{k,A,B,C}(x) \defeq \frac{A}{(x-B)^k}+C$$
 \end{definition}
 \begin{note}
 The parameter $C$ in both decay functions represents the limiting value
@@ -219,7 +225,7 @@ Given $f(x)$ a piecewise linear function (continuous on a finite connected domai
 \begin{enumerate}
 \item a left hand asymptotic value $y_{-\infty}$
 \item a right hand asymptotic value $y_{\infty}$
-\item a decay function type (either exponential for fixed $b$, or power for fixed $b$ and $k$)
+\item a decay function type (either exponential, or power for fixed degree $k$)
 \end{enumerate}
 an \ul{extension with decay} of $f(x)$ with decay is a function $\overline{f}(x)$ that:
 \begin{enumerate}
@@ -251,16 +257,18 @@ Proven in 2 cases, Theorem \ref{thm:power} and \ref{thm:exponential}.
 \begin{theorem}[Power Decay Version of Theorem \ref{thm:main}]
 \label{thm:power}
 Theorem \ref{thm:main} is true when the decay function is a power function, i.e.
-$\mathfrak{p}_{k,B}(x)$.  Furthermore the parameters for the decay function on the left hand
-side decay function is given by:
+$\mathfrak{p}_{k,A,B,C}(x)$.  Furthermore the parameters for the decay function on the left hand
+side decay function are given by:
 \begin{eqnarray*}
-B&=&a_1 + \frac{k}{m_1}(y_1-B)\\
+C&=& \hbox{LHS asymptotic value} \\
+B&=&a_1 + \frac{k}{m_1}(y_1-C)\\
 A&=&(y_1-C)(a_1-B)^k
 \end{eqnarray*}
 and the parameters for the right hand side decay function are given by:
 \begin{eqnarray*}
-B&=&a_n + \frac{k}{m_{n-1}}(y_n-B)\\
-A&=&(y_n-C)(a_n-B)^k
+C&=& \hbox{RHS asymptotic value} \\
+B&=&a_n + \frac{k}{m_{n-1}}(y_n-C)\\
+A&=&(y_n-C)(a_n-B)^k 
 \end{eqnarray*}
 Where $\vec{a}=(a_1, \ldots, a_n)$, $\vec{y}=(y_1,\ldots,y_n)$ and $m_i$ are
 as Definition \ref{def:computational}.
@@ -271,28 +279,28 @@ of the decay function at point $x_0$ and the value of its derivative
 at $x_0$ and the limiting value, which is $C$.  So given our decay function:
 \begin{eqnarray}
 \label{eqn:1}
-\mathfrak{p}_{k,B}(x)&=&\frac{A}{(x-B)^k} + C
+\mathfrak{p}_{k,A,B,C}(x)&=&\frac{A}{(x-B)^k} + C
 \end{eqnarray}
 and assume we know:
 \begin{eqnarray}
-\label{eqn:2}\mathfrak{p}_{k,B}(x_0)&=&y_0 \\
-\label{eqn:3}\mathfrak{p}'_{k,B}(x_0)&=&m_0 \\
+\label{eqn:2}\mathfrak{p}_{k,A,B,C}(x_0)&=&y_0 \\
+\label{eqn:3}\mathfrak{p}'_{k,A,B,C}(x_0)&=&m_0 \\
 C&=&\hbox{ the limiting value}
 \end{eqnarray}
 we want to use those equations to solve for $A, B$. Notice that:
 \begin{eqnarray}
-\label{eqn:4}\mathfrak{p}'_{k,B}(x) &=& \frac{-kA}{(x-B)^{k+1}}
+\label{eqn:4}\mathfrak{p}'_{k,A,B,C}(x) &=& \frac{-kA}{(x-B)^{k+1}}
 \end{eqnarray}
 Using Equation \ref{eqn:2} and the definition in Equation \ref{eqn:1} we get:
 \begin{eqnarray}
-\mathfrak{p}_{k,B}(x_0)&=&y_0 \\
+\mathfrak{p}_{k,A,B,C}(x_0)&=&y_0 \\
 \frac{A}{(x_0-B)^k} +C &=& y_0 \\ \label{eqn:k}
 \frac{A}{(x_0-B)^k} &=& y_0 - C
 \end{eqnarray}
 Using Equation \ref{eqn:3} and the definition of the slope in Equation
 \ref{eqn:4} we see:
 \begin{eqnarray}
-\mathfrak{p}'_{k,B}(x_0)&=&m_0 \\
+\mathfrak{p}'_{k,A,B,C}(x_0)&=&m_0 \\
 \frac{-kA}{(x_0-B)^{k+1}}&=&m_0 \\
 \left(\frac{A}{(x_0-B)^{k}}\right) \left( \frac{-k}{x_0-B} \right) &=&m_0 \\
 \hbox{plug Equation \ref{eqn:k} in} \\
@@ -315,16 +323,18 @@ $a_n, y_n, m_{n-1}$ we get the right side decay formula for $A$ and and $B$.
 \begin{theorem}[Exponential Decay Version of Theorem \ref{thm:main}]
 \label{thm:exponential}
 Theorem \ref{thm:main} is true when the decay function is an exponential function, i.e.
-$\mathfrak{e}_{B}(x)$.  Furthermore the parameters for the decay function on the left hand
+$\mathfrak{e}_{A,B,C}(x)$.  Furthermore the parameters for the decay function on the left hand
 side decay function is given by:
 \begin{eqnarray*}
-A&=&(y_1-C)e^{-Ba_1}\\
-B &=& \frac{m_1}{y_1-C}
+C&=&\hbox{LHS asymptotic value} \\
+B &=& \frac{m_1}{y_1-C} \\
+A&=&(y_1-C)e^{-Ba_1}
 \end{eqnarray*}
 and the parameters for the right hand side decay function are given by:
 \begin{eqnarray*}
-A&=&(y_n-C)e^{-Ba_n}\\
-B &=& \frac{m_{n-1}}{y_n-C}
+C&=&\hbox{RHS asymptotic value}\\
+B &=& \frac{m_{n-1}}{y_n-C} \\
+A&=&(y_n-C)e^{-Ba_n}
 \end{eqnarray*}
 Where $\vec{a}=(a_1, \ldots, a_n)$, $\vec{y}=(y_1,\ldots,y_n)$ and $m_i$ are
 as Definition \ref{def:computational}.
@@ -333,18 +343,18 @@ as Definition \ref{def:computational}.
 As with the proof of Theorem \ref{thm:power} we simply need to prove the
 formulas for $A$ and $C$ when we have the conditions
 \begin{eqnarray}
-\mathfrak{e}_{B}(x_0) &=& y_0 \label{eqn:e1}\\
+\mathfrak{e}_{A,B,C}(x_0) &=& y_0 \label{eqn:e1}\\
 \mathfrak{e}'_{B}(x_0) &=& m_0 \label{eqn:e2}
 \end{eqnarray}
 Notice that the exponential decay function and its derivative are given by:
 \begin{eqnarray}
-\mathfrak{e}_{B}(x) = Ae^{Bx}+C \label{eqn:e3}\\
+\mathfrak{e}_{A,B,C}(x) = Ae^{Bx}+C \label{eqn:e3}\\
 \mathfrak{e}'_{B}(x) = ABe^{Bx} \label{eqn:e4}
 \end{eqnarray}
 We can use the formula in Equation \ref{eqn:e3} and plug into Equation \ref{eqn:e1}
 and get:
 \begin{eqnarray}
-\mathfrak{e}_{B}(x_0) &=& y_0 \\
+\mathfrak{e}_{A,B,C}(x_0) &=& y_0 \\
 Ae^{Bx_0} + C &=& y_0 \\
 Ae^{Bx_0} &=& y_0 - C \label{eqn:ePlugin}\\
 A&=&(y_0-C)e^{-Bx_0} \label{eqn:eAsolve}
