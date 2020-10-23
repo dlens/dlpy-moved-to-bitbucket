@@ -115,8 +115,12 @@ def pw_linear(x, pts, lhs_asymptote, rhs_asymptote, decay_type=DecayType.POWER, 
         LHS=None
         RHS=None
         if len(pts)==1:
-            m0=1
-            m1=1
+            if lhs_asymptote <= rhs_asymptote:
+                m0=1
+                m1=1
+            else:
+                m0=-1
+                m1=-1
         else:
             m0=slope(pts[1], pts[0])
             m1 = slope(pts[-1], pts[-2])
@@ -130,7 +134,10 @@ def pw_linear(x, pts, lhs_asymptote, rhs_asymptote, decay_type=DecayType.POWER, 
         return (LHS,RHS)
     if x < pts[0][0]:
         if len(pts)==1:
-            m=1
+            if lhs_asymptote <= rhs_asymptote:
+                m=1
+            else:
+                m=-1
         else:
             m=slope(pts[1], pts[0])
         if decay_type == DecayType.POWER:
@@ -141,7 +148,10 @@ def pw_linear(x, pts, lhs_asymptote, rhs_asymptote, decay_type=DecayType.POWER, 
             raise Exception("Unknown decay type")
     elif x > pts[-1][0]:
         if len(pts) == 1:
-            m=1
+            if lhs_asymptote <= rhs_asymptote:
+                m=1
+            else:
+                m=-1
         else:
             m=slope(pts[-1], pts[-2])
         if decay_type == DecayType.POWER:

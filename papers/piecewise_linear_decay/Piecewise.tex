@@ -379,6 +379,25 @@ B &=& \frac{m_1}{y_1-C}
 \end{eqnarray*}
 And similarly we get the equations for the right hand side decay formula.
 \end{proof}
+\section{What happens with only one point?}
+With only a single point $(x_1, y_1)$ there is no piecewise linear function to do,
+only the decays.  However, we do not have two points to calculate $m_1$ and $m_{n-1}$
+from the formulas.  When this happens, we simply define $m_1$ and $m_{n-1}$ to be 1, if
+the LHS asymptote is less than or equal to the RHS asymptote and we set them to -1 otherwise.
+
+For instance if we have a piecewise linear function with decays 
+through the point $(10,0.5)$ with LHS limit 0 and RHS limit 1, the decay slopes
+$m_1$ and $m_{n-1}$ would both be 1.  The graph looks like:
+\begin{center}
+	\includegraphics[width=3.5in]{graph4}
+\end{center}
+
+Whereas if we have the same setup except the LHS and RHS asymptotes are switched, the
+slopes $m_1$ and $m_{n-1}$ would both be $-1$, and the graph would look like:
+
+\begin{center}
+	\includegraphics[width=3.5in]{graph5}
+\end{center}
 %\bibliography{programming}
 %\bibliographystyle{plain}
 \end{document}
