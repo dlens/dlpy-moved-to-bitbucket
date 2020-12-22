@@ -9,9 +9,37 @@ from matplotlib.lines import Line2D
 
 def decay_between(stepsToDecay, max_steps, lower, upper):
     diff = upper - lower
+    if max_steps == 0:
+        return upper
     slope = (upper - lower)/max_steps
     return lower + stepsToDecay*slope
 
+def rank_interpolate(plan_subset, min_count, lower_grade, upper_grade,
+                     best_plan_subset=None, base=0.707):
+    """
+    Interpolates a ranking grade between it's lowest and highest scores using the
+    power ranking algorithm.
+    :param plan_subset: The subset of the plan on the top_n projects, in order
+    :param min_count: The minimum count of on's we need to get our lowest_grade
+    :param lower_grade: The lowest grade possible it should get, with min_count
+    :param best_plan_subset: The best plan possible.  If None, we set to [1]*len(plan_subset)
+    :param upper_grade: The highest grade possible it should get if
+    :param base:
+    :return:
+    """
+    if best_plan_subset is None:
+        best_plan_subset = [1]*len(plan_subset)
+    scores = [base**i for i in range(len(plan_subset))]
+    out_of = len(scores)
+    #The lowest possible total is funding the last min_count projects
+    lowest_scores = scores[(out_of-min_count):]
+    lowest_total = np.sum(lowest_scores)
+    highest_total= np.dot(scores, best_plan_subset)
+    # Now we can calculate our score
+    score = np.sum([score * status for score,status in zip(scores, plan_subset)])
+    percent = (score - lowest_total)/(highest_total-lowest_total)
+    rval = lower_grade + (upper_grade-lower_grade)*percent
+    return rval
 
 class RankScoringV1:
     '''
@@ -19,7 +47,8 @@ class RankScoringV1:
     level A,B,C,D and the first target/out_of you hit is the letter grade.  The gradations come
     from how much above that level you get.
     '''
-    def __init__(self, a_target, a_out_of, b_target, b_out_of, c_target, c_out_of, d_target, d_out_of):
+    def __init__(self, a_target, a_out_of, b_target, b_out_of, c_target, c_out_of, d_target, d_out_of,
+                 use_rank_interpolate = False):
         '''
         Constructor
         :param a_target: the target number for the A target.  For instance if 2 of top 5 is an A, this would be 2
@@ -40,6 +69,7 @@ class RankScoringV1:
         self.c_out_of = c_out_of
         self.d_out_of = d_out_of
         self.grade_decay_rate = 0.707
+        self.use_rank_interpolate = use_rank_interpolate
 
     @staticmethod
     def standard(scores):
@@ -78,8 +108,7 @@ class RankScoringV1:
             self.d_target, self.d_out_of
         )
 
-    @staticmethod
-    def grade_on(scores, plan, target, out_of, min_grade, max_grade, return_none=True):
+    def grade_on(self, scores, plan, target, out_of, best_plan, min_grade, max_grade, return_none=True):
         '''
         A simple function to get the grade of a plan ON a particular target.  Used by the grade() method only.
         :param plan: The plan to grade
@@ -103,8 +132,21 @@ class RankScoringV1:
         if total >= target:
             # We have an A, how much over the A are we
             overage = total - target
-            # Exponentially decay between upper and lower
-            return decay_between(overage, out_of - target, min_grade, max_grade)
+            # Decay between upper and lower
+            if self.use_rank_interpolate:
+                return rank_interpolate(
+                    [plan[i] for i in sort_ix[0:out_of]],
+                    target,
+                    min_grade, max_grade,
+                    [best_plan[i] for i in sort_ix[0:out_of]],
+                    self.grade_decay_rate
+                )
+            else:
+                return decay_between(
+                    overage,
+                    np.sum([best_plan[i] for i in sort_ix[0:out_of]])-target,
+                    min_grade, max_grade
+                )
         else:
             if return_none:
                 return None
@@ -121,23 +163,34 @@ class RankScoringV1:
         :return: The grade, a number between 0 and 1.
         '''
         # Check for A
-        score = self.grade_on(scores, plan, self.a_target, self.a_out_of, 0.8, 1.0)
+        best_plans = self.best_plan_not_above(scores)
+        score = self.grade_on(scores, plan, self.a_target, self.a_out_of,
+                              best_plans[0],
+                              0.8, 1.0)
         if score is not None:
             return score
         # Check for B
-        score = self.grade_on(scores, plan, self.b_target, self.b_out_of, 0.6, 0.8)
+        score = self.grade_on(scores, plan, self.b_target, self.b_out_of,
+                              best_plans[1],
+                              0.6, 0.8)
         if score is not None:
             return score
         # Check for C
-        score = self.grade_on(scores, plan, self.c_target, self.c_out_of, 0.4, 0.6)
+        score = self.grade_on(scores, plan, self.c_target, self.c_out_of,
+                              best_plans[2],
+                              0.4, 0.6)
         if score is not None:
             return score
         # Check for D
-        score = self.grade_on(scores, plan, self.d_target, self.d_out_of, 0.2, 0.4)
+        score = self.grade_on(scores, plan, self.d_target, self.d_out_of,
+                              best_plans[3],
+                              0.2, 0.4)
         if score is not None:
             return score
         # We have an F
-        return self.grade_on(scores, plan, self.d_target, self.d_out_of, 0.0, 0.2, return_none=False)
+        return self.grade_on(scores, plan, self.d_target, self.d_out_of,
+                             best_plans[4],
+                             0.0, 0.2, return_none=False)
 
     @staticmethod
     def percent(scores, plan, out_of):
@@ -197,13 +250,13 @@ class RankScoringV1:
         :param score:
         :return:
         '''
-        if score > 0.8:
+        if score >= 0.8:
             return "A"
-        elif score > 0.6:
+        elif score >= 0.6:
             return "B"
-        elif score > 0.4:
+        elif score >= 0.4:
             return "C"
-        elif score > 0.2:
+        elif score >= 0.2:
             return "D"
         else:
             return "F"
@@ -270,4 +323,74 @@ class RankScoringV1:
         ax.legend(handles=legend_elements)
         ax.yaxis.set_major_formatter(mtick.PercentFormatter(xmax=1))
         grade = "{:.1f}".format(raw_grade * 100)
-        plt.title("Our plan grade is {}, {}th percentile".format(self.letter_of_grade(raw_grade), grade))
+        if self.use_rank_interpolate:
+            plt.title("With rank interpolation the grade is {}, {}th percentile".format(self.letter_of_grade(raw_grade), grade))
+        else:
+            plt.title("With linear interpolation the plan grade is {}, {}th percentile".format(self.letter_of_grade(raw_grade), grade))
+
+    def out_of(self, letter):
+        if letter == "A":
+            return self.a_out_of
+        elif letter == "B":
+            return self.b_out_of
+        elif letter == "C":
+            return self.c_out_of
+        elif letter == "D":
+            return self.d_out_of
+        else:
+            raise Exception("Don't understand "+str(letter))
+
+    def plot_heatmap(self, scores, plan, letter_grade=None, ax=plt):
+        '''
+        Plots the 1-d h
+        :param scores: The scores to do the heatmap
+        :param plan: The plan to use
+        :param grade: The letter grade to heatmap for, if None, we grade, then heatmap for the appropriate grade
+        :param ax: The plot do work in, if None
+        :return:
+        '''
+        f = ax.figure()
+        f.set_figheight(2)
+        if letter_grade is None:
+            grade = self.grade(scores, plan)
+            letter_grade = self.letter_of_grade(grade)
+        out_of = self.out_of(letter_grade)
+        y = np.array(plan[0:out_of])
+        ax.imshow(y[np.newaxis, :], cmap="Blues")
+        ax.title("Funded projects in Blue, by rank, for grade "+letter_grade)
+        ax.xlim([-0.5, len(y)-0.5])
+        ax.yticks([])
+        texts = [str(i + 1) for i in range(len(y))]
+        indices = [i + 0 for i in range(len(y))]
+        ax.xticks(indices, texts)
+
+    def best_plan_not_above(self, scores):
+        a_plan = [1] * len(scores)
+        sort_ix = np.argsort(scores)
+        for i in range(self.a_target - 1, self.a_out_of):
+            a_plan[i] = 0
+        b_plan = [i for i in a_plan]
+        b_sum = self.percent(scores, b_plan, self.b_out_of) * self.b_out_of
+        index = self.b_out_of - 1
+        while b_sum >= self.b_target:
+            b_plan[index] = 0
+            b_sum -= 1
+            index -= 1
+
+        c_plan = [i for i in b_plan]
+        c_sum = self.percent(scores, c_plan, self.c_out_of) * self.c_out_of
+        index = self.c_out_of - 1
+        while c_sum >= self.c_target:
+            c_plan[index] = 0
+            c_sum -= 1
+            index -= 1
+
+        d_plan = [i for i in c_plan]
+        d_sum = self.percent(scores, d_plan, self.d_out_of) * self.d_out_of
+        index = self.d_out_of - 1
+        while d_sum >= self.d_target:
+            d_plan[index] = 0
+            d_sum -= 1
+            index -= 1
+
+        return [1]*len(scores), a_plan, b_plan, c_plan, d_plan
