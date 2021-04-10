@@ -1,2 +1,2 @@
 # dlpy
-Common math and fun functions
+Common python library for DL research.
